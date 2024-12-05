@@ -52,13 +52,15 @@ class Program
 
         foreach(var asset in Db.Assets)        
         {
-            var timeDifference = dateNow.Subtract(asset.PurchaseDate);
-            int experied = 1095 - timeDifference.Days;
+            DateTime purchaseDate = asset.PurchaseDate;
+            var timeDifference = dateNow.Subtract(purchaseDate);            
+            int experied = 1095 - timeDifference.Days;            
 
             if(experied <= 90)
             {
                 Console.ForegroundColor = ConsoleColor.Red;                
-            } else if (experied <= 120)
+            } 
+            else if (experied <= 120)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;                
             }
@@ -67,8 +69,7 @@ class Program
                 Console.ForegroundColor = ConsoleColor.Gray;                
             }
 
-            Console.WriteLine($"{asset.Type}".PadRight(20) + $"{asset.Brand}".PadRight(20) + $"{asset.Model}".PadRight(20) + $"{asset.Price}".PadRight(20) + $"{asset.PurchaseDate.ToString("dd-MM-yyyy")}".PadRight(20));
-            
+            Console.WriteLine($"{asset.Type}".PadRight(20) + $"{asset.Brand}".PadRight(20) + $"{asset.Model}".PadRight(20) + $"{asset.Price}".PadRight(20) + $"{asset.PurchaseDate.ToString("dd-MM-yyyy")}".PadRight(20));            
         }
     }
 

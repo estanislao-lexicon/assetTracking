@@ -26,8 +26,7 @@ class Program
 
             if(input == "A")
             {
-                System.Console.WriteLine("New Asset will be coming soon");
-                // NewAsset(MyDb);
+                NewAsset(MyDb);
             }
             else if(input == "P")
             {
@@ -44,13 +43,19 @@ class Program
         }
     }
 
-    public static void PrintList(MyDbContext Db)
+    public static void PrintList(MyDbContext MyDb)
     {
         DateTime dateNow = DateTime.Now;
+        
+        Console.Clear();
+        Console.ForegroundColor = ConsoleColor.Gray;
+        string headers = "Asset".PadRight(20) + "Brand".PadRight(20) + "Model".PadRight(20) + "Price(USD)".PadRight(20) + "Purchase Date".PadRight(20) + "\n";
+        System.Console.WriteLine(headers);
+        string divider = new string('-', headers.Length);
+        System.Console.WriteLine(divider);
+        Console.ResetColor();
 
-        Console.WriteLine("Asset".PadRight(20) + "Brand".PadRight(20) + "Model".PadRight(20) + "Price(USD)".PadRight(20) + "Purchase Date".PadRight(20) + "\n");
-
-        foreach(var asset in Db.Assets)        
+        foreach(var asset in MyDb.Assets)        
         {
             DateTime purchaseDate = asset.PurchaseDate;
             var timeDifference = dateNow.Subtract(purchaseDate);            
@@ -73,89 +78,112 @@ class Program
         }
     }
 
-    // public static void NewAsset(MyDbContext Db)
-    // {            
-    //     string type;
-    //     Type assetType;
-
-    //     while (true)
-    //     {
-    //         Console.WriteLine("Please enter the type of asset you want to create (Computer or Smartphone):");
-    //         Console.Write(">");
-    //         type = Console.ReadLine();
+    public static void NewAsset(MyDbContext MyDb)
+    {            
+        string type;
+        while (true)
+        {
+            Console.WriteLine("Please enter the type of asset you want to create (Computer, Smartphone, etc):");
+            Console.Write(">");
+            type = Console.ReadLine();
                         
-    //         if (!string.IsNullOrEmpty(type))
-    //         {
-    //             type = char.ToUpper(type[0]) + type.Substring(1).ToLower();
-    //         }
-            
-    //         string assetTypeName = $"assetTracking.{type}";
+            if (!string.IsNullOrEmpty(type))
+            {
+                type = char.ToUpper(type[0]) + type.Substring(1).ToLower();
+            }            
+                       
+            if (type != null)
+            {
+                break;
+            }
 
-    //         assetType = Type.GetType(assetTypeName);
-    //         if (assetType != null)
-    //         {
-    //             break;
-    //         }
+            Console.WriteLine($"Asset type '{type}' is not recognized. Please ensure it is a valid class name.");
+        }
 
-    //         Console.WriteLine($"Asset type '{type}' is not recognized. Please ensure it is a valid class name.");
-    //     }
+        System.Console.WriteLine($"Please enter the brand of the {type}:");
+        System.Console.Write(">");
+        string brand = Console.ReadLine();
 
-    //     System.Console.WriteLine($"Please enter the brand of the {type}:");
-    //     System.Console.Write(">");
-    //     string brand = Console.ReadLine();
+        System.Console.WriteLine($"Please enter the model of the {type}:");
+        System.Console.Write(">");
+        string model = Console.ReadLine();
 
-    //     System.Console.WriteLine($"Please enter the model of the {type}:");
-    //     System.Console.Write(">");
-    //     string model = Console.ReadLine();
+        decimal price;    
+        System.Console.WriteLine($"Please enter the price in USD of the {type}:");
+        System.Console.Write(">");
+        string input = Console.ReadLine();
 
-    //     System.Console.WriteLine($"Please enter the price in USD of the {type}:");
-    //     System.Console.Write(">");
-    //     double price = Convert.ToDouble(Console.ReadLine());
+        while (!decimal.TryParse(input, out price) || price <= 0)
+        {
+            Console.WriteLine("Invalid price. Please enter a numeric value greater than 0:");
+            Console.Write(">");
+            input = Console.ReadLine();
+        }
 
-    //     while (!double.TryParse(Console.ReadLine(), out price) || price <= 0)
-    //     {
-    //         Console.WriteLine("Invalid price. Please enter a numeric value greater than 0:");
-    //         Console.Write(">");
-    //     }
+        System.Console.WriteLine($"Please enter the purchase date (yyyy-mm-dd) of the {type}:");
+        System.Console.Write(">");
+        string purchaseDateString = Console.ReadLine();
+        DateTime purchaseDate;
 
-    //     System.Console.WriteLine($"Please enter the purchase date of the {type}:");
-    //     System.Console.Write(">");
-    //     string purchaseDateString = Console.ReadLine();
-    //     DateTime purchaseDate;
+        if (!DateTime.TryParseExact(purchaseDateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out purchaseDate))
+        {
+            Console.WriteLine("Invalid purchase date format. Asset creation aborted.");
+            return;
+        }
 
-    //     if (!DateTime.TryParseExact(purchaseDateString, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out purchaseDate))
-    //     {
-    //         Console.WriteLine("Invalid purchase date format. Asset creation aborted.");
-    //         return;
-    //     }
+        System.Console.WriteLine($"Please enter the office where the {type} is located:");
+        System.Console.Write(">");
+        string office = Console.ReadLine();
+        int officeId = 0;
+        if (!string.IsNullOrEmpty(type))
+        {
+            if(office == "USA")
+            {
+                officeId = 1;
+            } 
+            else if (office == "Sweden")
+            {
+                officeId = 2;
+            }
+            else if (office == "Germany")
+            {
+                officeId = 3;
+            }
+            else
+            {
+                System.Console.WriteLine("Please enter a valid location.");
+            }            
+        }
 
-    //     System.Console.WriteLine($"Please enter the office where the {type} is located:");
-    //     System.Console.Write(">");
-    //     string office = Console.ReadLine();
-    //     if (!string.IsNullOrEmpty(type))
-    //     {
-    //         office = char.ToUpper(office[0]) + office.Substring(1).ToLower();
-    //     }
+        try
+        {            
+            Asset newAsset = new Asset
+            {
+                Type = type,
+                Brand = brand,
+                Model = model,
+                Price = (decimal)price,
+                PurchaseDate = purchaseDate,
+                OfficeId = officeId
+            };
 
-    //     try
-    //     {            
-    //         Asset newAsset = (Asset)Activator.CreateInstance(assetType, brand, model, price, purchaseDate, office);
-    //         trackerList.Add(newAsset);
-    //         Console.WriteLine($"{type} asset created successfully!");
-    //     }       
-    //     catch (MissingMethodException)
-    //     {
-    //         Console.WriteLine($"The class '{type}' does not have the expected constructor.");
-    //     }
-    //     catch (InvalidCastException)
-    //     {
-    //         Console.WriteLine($"The asset created is not of type Asset.");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"An unexpected error occurred: {ex.Message}");
-    //     }       
-    // }
+            MyDb.Assets.Add(newAsset);
+            MyDb.SaveChanges();
+            Console.WriteLine($"{type} asset created successfully!");
+        }       
+        catch (MissingMethodException)
+        {
+            Console.WriteLine($"The class '{type}' does not have the expected constructor.");
+        }
+        catch (InvalidCastException)
+        {
+            Console.WriteLine($"The asset created is not of type Asset.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }       
+    }
     // public void SetLocalPrice()
     // {
     //     // Exchange rates: add more in case of more Office created

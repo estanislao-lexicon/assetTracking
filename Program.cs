@@ -358,39 +358,7 @@ class Program
     }
 
     public static void Report(MyDbContext MyDb)
-    {
-        var officesList = MyDb.Offices.Select(o => o.Name).ToList();
-        
-        Console.Clear();
-        Console.WriteLine(" ".PadRight(20) + string.Join(" ".PadRight(10), officesList));
-
-        // var computersByOffice = MyDb.Assets
-        //     .Where(a => a.Type == "Computer")
-        //     .GroupBy(a => a.OfficeId)
-        //     .Select(group => new
-        //     {                
-        //         ComputerCount = group.Count()
-        //     })
-        //     .ToList();
-
-        // var smartphonesByOffice = MyDb.Assets
-        //     .Where(a => a.Type == "Smartphone")
-        //     .GroupBy(a => a.OfficeId)
-        //     .Select(group => new
-        //     {             
-        //         SmartphoneCount = group.Count()
-        //     })
-        //     .ToList();
-
-        // System.Console.WriteLine(
-        //     "Smartphones".PadRight(20) +
-        //     string.Join("".PadRight(15), smartphonesByOffice.Select(item => item.SmartphoneCount.ToString()))
-        // );
-        // System.Console.WriteLine(
-        //     "Computers".PadRight(20) +
-        //     string.Join("".PadRight(15), computersByOffice.Select(item => item.ComputerCount.ToString()))
-        // );
-
+    {        
         var report = MyDb.Assets
             .GroupBy(a => new { a.Type, a.OfficeId })
             .Select(g => new
